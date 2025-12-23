@@ -13,7 +13,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:5000
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/loginapp.db
-      - JwtSettings__SecretKey=YourSuperSecretKeyForJWTTokenGenerationAndValidation2024!
+      # SECURITY: Change these values in production or use Docker secrets
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY:-YourSuperSecretKeyForJWTTokenGenerationAndValidation2024!}
       - JwtSettings__Issuer=LoginApi
       - JwtSettings__Audience=LoginApiClients
       - JwtSettings__AccessTokenExpirationMinutes=15

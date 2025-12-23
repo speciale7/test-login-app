@@ -413,3 +413,50 @@ For issues and questions, please open an issue on GitHub.
 ---
 
 **Built with ❤️ using .NET 8 and Angular 18**
+
+## 🔐 Security Configuration
+
+### Important Security Notes
+
+**⚠️ BEFORE DEPLOYING TO PRODUCTION:**
+
+1. **JWT Secret Key**: 
+   - Never use the default secret key in production
+   - Generate a strong, random secret key (at least 64 characters)
+   - Store it in environment variables or use a secrets management service
+   
+   ```bash
+   # Example: Generate a secure random key
+   openssl rand -base64 64
+   ```
+
+2. **Environment Variables**:
+   - Copy `.env.example` to `.env` and update with your values
+   - Never commit `.env` files to version control
+   - Use Docker secrets or cloud provider secret managers for production
+
+3. **Production API URL**:
+   - Update `frontend/src/environments/environment.prod.ts` with your production API URL
+   - Or use build-time environment variable replacement
+
+4. **HTTPS**:
+   - Always use HTTPS in production
+   - Configure SSL/TLS certificates
+   - Update CORS settings to allow your production domain
+
+### Example Production Setup
+
+```bash
+# Set environment variable for JWT secret
+export JWT_SECRET_KEY="your-super-secret-key-here"
+
+# Run with docker-compose
+docker-compose up -d
+```
+
+Or create a `.env` file in the root directory:
+```
+JWT_SECRET_KEY=your-super-secret-key-here
+```
+
+Then docker-compose will automatically use it.
