@@ -1,0 +1,68 @@
+.navigation-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.app-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.app-name mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-links button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+  font-size: 14px;
+}
+
+.user-name mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .app-name {
+    font-size: 18px;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .nav-links button {
+    min-width: auto;
+    padding: 0 12px;
+  }
+}
