@@ -1,0 +1,40 @@
+<mat-toolbar color="primary" class="navigation-toolbar">
+  <span class="app-name" routerLink="/">
+    <mat-icon>lock</mat-icon>
+    Login App
+  </span>
+
+  <span class="spacer"></span>
+
+  <div class="nav-links" *ngIf="!authService.isAuthenticated()">
+    <button mat-button routerLink="/login">
+      <mat-icon>login</mat-icon>
+      Login
+    </button>
+    <button mat-raised-button color="accent" routerLink="/register">
+      <mat-icon>person_add</mat-icon>
+      Register
+    </button>
+  </div>
+
+  <div class="nav-links" *ngIf="authService.isAuthenticated()">
+    <span class="user-name">
+      <mat-icon>person</mat-icon>
+      {{ authService.currentUser()?.username }}
+    </span>
+    <button mat-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/dashboard">
+        <mat-icon>dashboard</mat-icon>
+        Dashboard
+      </button>
+      <button mat-menu-item (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>
