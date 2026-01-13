@@ -67,6 +67,110 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.EnsureCreated();
+    
+    // Make first user admin if no admins exist
+    if (!dbContext.Users.Any(u => u.Role == LoginApi.Models.UserRole.Admin))
+    {
+        var firstUser = dbContext.Users.FirstOrDefault();
+        if (firstUser != null)
+        {
+            firstUser.Role = LoginApi.Models.UserRole.Admin;
+            dbContext.SaveChanges();
+            Console.WriteLine($"Set {firstUser.Username} as Admin");
+        }
+    }
+
+    // Seed sample data for testing if tables are empty
+    if (!dbContext.BanconoteWithdrawalAutomatic.Any())
+    {
+        dbContext.BanconoteWithdrawalAutomatic.AddRange(
+            new LoginApi.Models.BanconoteWithdrawalAutomatic
+            {
+                IdStore = 371,
+                StoreAlias = "Tavagnacco",
+                CountingDate = DateTime.Today,
+                SecurityEnvelopeCode = "ENV001",
+                CountingAmount = 1200,
+                CountingDifference = 0,
+                WithdrawalDate = DateTime.Today.AddHours(14).AddMinutes(30),
+                CountingAt = DateTime.Now,
+                CountingBy = "e.albrile"
+            }
+        );
+        dbContext.SaveChanges();
+        Console.WriteLine("Added sample Cassa Intelligente data");
+    }
+
+    if (!dbContext.ExpenseFund.Any())
+    {
+        dbContext.ExpenseFund.AddRange(
+            new LoginApi.Models.ExpenseFund
+            {
+                IdStore = 371,
+                CountingDate = DateTime.Today,
+                ExpenseType = "Forniture",
+                CountingAmount = 150,
+                InvoiceNumber = "F001",
+                ReasonExpenses = "Acquisto materiale",
+                CountingAt = DateTime.Now,
+                CountingBy = "e.albrile"
+            }
+        );
+        dbContext.SaveChanges();
+        Console.WriteLine("Added sample Fondo Spese data");
+    }
+
+    if (!dbContext.CashFund.Any())
+    {
+        dbContext.CashFund.AddRange(
+            new LoginApi.Models.CashFund
+            {
+                IdStore = 371,
+                CashCode = "1",
+                CountingDate = DateTime.Today,
+                CountingAmount = 500,
+                CountingAt = DateTime.Now,
+                CountingBy = "e.albrile"
+            },
+            new LoginApi.Models.CashFund
+            {
+                IdStore = 371,
+                CashCode = "2",
+                CountingDate = DateTime.Today,
+                CountingAmount = 500,
+                CountingAt = DateTime.Now,
+                CountingBy = "e.albrile"
+            },
+            new LoginApi.Models.CashFund
+            {
+                IdStore = 371,
+                CashCode = "3",
+                CountingDate = DateTime.Today,
+                CountingAmount = 500,
+                CountingAt = DateTime.Now,
+                CountingBy = "e.albrile"
+            }
+        );
+        dbContext.SaveChanges();
+        Console.WriteLine("Added sample Fondo Cassa data");
+    }
+
+    if (!dbContext.MonetaryFund.Any())
+    {
+        dbContext.MonetaryFund.AddRange(
+            new LoginApi.Models.MonetaryFund
+            {
+                IdStore = 371,
+                CountingDate = DateTime.Today,
+                CountingAmount = 1500,
+                CountingNote = "Fondo iniziale",
+                CountingAt = DateTime.Now,
+                CountingBy = "e.albrile"
+            }
+        );
+        dbContext.SaveChanges();
+        Console.WriteLine("Added sample Sovv. Monetaria data");
+    }
 }
 
 // Configure the HTTP request pipeline

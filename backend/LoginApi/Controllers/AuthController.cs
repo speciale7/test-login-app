@@ -75,6 +75,7 @@ public class AuthController : ControllerBase
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
+                    Role = user.Role,
                     CreatedAt = user.CreatedAt
                 }
             });
@@ -121,6 +122,7 @@ public class AuthController : ControllerBase
                     Id = user.Id,
                     Username = user.Username,
                     Email = user.Email,
+                    Role = user.Role,
                     CreatedAt = user.CreatedAt
                 }
             });
@@ -173,6 +175,7 @@ public class AuthController : ControllerBase
                     Id = refreshToken.User.Id,
                     Username = refreshToken.User.Username,
                     Email = refreshToken.User.Email,
+                    Role = refreshToken.User.Role,
                     CreatedAt = refreshToken.User.CreatedAt
                 }
             });
@@ -210,6 +213,7 @@ public class AuthController : ControllerBase
                 Id = user.Id,
                 Username = user.Username,
                 Email = user.Email,
+                Role = user.Role,
                 CreatedAt = user.CreatedAt
             });
         }

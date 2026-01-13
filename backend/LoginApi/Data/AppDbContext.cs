@@ -14,6 +14,11 @@ public class AppDbContext : DbContext
     
     public DbSet<User> Users { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Busta> Buste { get; set; }
+    public DbSet<BanconoteWithdrawalAutomatic> BanconoteWithdrawalAutomatic { get; set; }
+    public DbSet<ExpenseFund> ExpenseFund { get; set; }
+    public DbSet<CashFund> CashFund { get; set; }
+    public DbSet<MonetaryFund> MonetaryFund { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +51,22 @@ public class AppDbContext : DbContext
             entity.HasOne(rt => rt.User)
                 .WithMany(u => u.RefreshTokens)
                 .HasForeignKey(rt => rt.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+        
+        // Busta configuration
+        modelBuilder.Entity<Busta>(entity =>
+        {
+            entity.HasKey(b => b.Id);
+            
+            entity.Property(b => b.DataRiferimento).IsRequired();
+            entity.Property(b => b.Totale).HasPrecision(18, 2);
+            entity.Property(b => b.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            
+            // Relationship: Busta belongs to User
+            entity.HasOne(b => b.User)
+                .WithMany()
+                .HasForeignKey(b => b.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }
