@@ -1,15 +1,15 @@
 <div class="login-container">
   <mat-card class="login-card">
     <mat-card-header>
-      <mat-card-title>Login</mat-card-title>
-      <mat-card-subtitle>Sign in to your account</mat-card-subtitle>
+      <mat-card-title>Accedi</mat-card-title>
+      <mat-card-subtitle>Accedi al tuo account</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="Enter your email">
+          <input matInput type="email" formControlName="email" placeholder="Inserisci la tua email">
           <mat-error *ngIf="loginForm.get('email')?.invalid">
             {{ getEmailError() }}
           </mat-error>
@@ -17,14 +17,14 @@
 
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" placeholder="Enter your password">
+          <input matInput type="password" formControlName="password" placeholder="Inserisci la tua password">
           <mat-error *ngIf="loginForm.get('password')?.invalid">
             {{ getPasswordError() }}
           </mat-error>
         </mat-form-field>
 
         <div class="checkbox-container">
-          <mat-checkbox formControlName="rememberMe">Remember me</mat-checkbox>
+          <mat-checkbox formControlName="rememberMe">Ricordami</mat-checkbox>
         </div>
 
         <div *ngIf="errorMessage" class="error-message">
@@ -33,12 +33,12 @@
 
         <button mat-raised-button color="primary" type="submit" class="full-width submit-button"
                 [disabled]="loginForm.invalid || loading">
-          <span *ngIf="!loading">Login</span>
+          <span *ngIf="!loading">Accedi</span>
           <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
         </button>
 
         <div class="register-link">
-          Don't have an account? <a routerLink="/register">Register here</a>
+          Non hai un account? <a routerLink="/register">Registrati qui</a>
         </div>
       </form>
     </mat-card-content>

@@ -1,0 +1,34 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { UserDto, CreateUserDto, UpdateUserDto } from '../models/user.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UsersService {
+  private apiUrl = `${environment.apiUrl}/users`;
+
+  constructor(private http: HttpClient) { }
+
+  getUsers(): Observable<UserDto[]> {
+    return this.http.get<UserDto[]>(this.apiUrl);
+  }
+
+  getUser(id: number): Observable<UserDto> {
+    return this.http.get<UserDto>(`${this.apiUrl}/${id}`);
+  }
+
+  createUser(user: CreateUserDto): Observable<UserDto> {
+    return this.http.post<UserDto>(this.apiUrl, user);
+  }
+
+  updateUser(id: number, user: UpdateUserDto): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, user);
+  }
+
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+}

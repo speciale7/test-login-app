@@ -59,12 +59,12 @@ export class LoginComponent {
 
     this.authService.login({ email, password }).subscribe({
       next: () => {
-        this.snackBar.open('Login successful!', 'Close', { duration: 3000 });
+        this.snackBar.open('Login effettuato con successo!', 'Chiudi', { duration: 3000 });
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         this.errorMessage = error.message;
-        this.snackBar.open(error.message, 'Close', { duration: 5000 });
+        this.snackBar.open(error.message, 'Chiudi', { duration: 5000 });
         this.loading = false;
       },
       complete: () => {
@@ -76,10 +76,10 @@ export class LoginComponent {
   getEmailError(): string {
     const emailControl = this.loginForm.get('email');
     if (emailControl?.hasError('required')) {
-      return 'Email is required';
+      return 'Email è richiesta';
     }
     if (emailControl?.hasError('email')) {
-      return 'Please enter a valid email';
+      return 'Inserisci un\'email valida';
     }
     return '';
   }
@@ -87,7 +87,7 @@ export class LoginComponent {
   getPasswordError(): string {
     const passwordControl = this.loginForm.get('password');
     if (passwordControl?.hasError('required')) {
-      return 'Password is required';
+      return 'Password è richiesta';
     }
     return '';
   }

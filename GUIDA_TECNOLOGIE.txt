@@ -1,0 +1,1008 @@
+GUIDA COMPLETA ALLE TECNOLOGIE E METODOLOGIE UTILIZZATE
+========================================================
+
+Questa guida spiega ogni tecnologia e metodologia utilizzata nell'applicazione di gestione
+buste con sistema di autenticazione e controllo degli accessi basato sui ruoli.
+
+
+1. .NET 8.0 E ASP.NET CORE
+--------------------------
+
+Cos'è:
+.NET è una piattaforma di sviluppo creata da Microsoft per costruire applicazioni moderne.
+ASP.NET Core è il framework web all'interno di .NET specifico per creare API e applicazioni web.
+
+Come funziona:
+.NET 8.0 è l'ultima versione LTS (Long Term Support) che fornisce un runtime per eseguire
+applicazioni C#. Include il compilatore, le librerie di base e il runtime di esecuzione.
+ASP.NET Core aggiunge funzionalità web come gestione delle richieste HTTP, routing, middleware.
+
+Perché lo usiamo:
+- Cross-platform: funziona su Windows, Linux, macOS
+- Alte prestazioni: uno dei framework web più veloci disponibili
+- Ecosistema maturo: tantissime librerie e documentazione
+- Supporto ufficiale Microsoft con aggiornamenti regolari
+Nel nostro caso, lo usiamo per costruire il backend API che gestisce dati e autenticazione.
+
+
+2. ENTITY FRAMEWORK CORE (EF Core)
+-----------------------------------
+
+Cos'è:
+Entity Framework Core è un ORM (Object-Relational Mapper), uno strumento che traduce
+automaticamente tra oggetti C# e database relazionali.
+
+Come funziona:
+Permette di scrivere codice C# per interagire con il database invece di scrivere SQL
+manualmente. Definisci delle classi (Models) che rappresentano le tabelle, e EF Core
+gestisce la creazione delle query SQL, il salvataggio dei dati, le relazioni tra tabelle.
+Usa il pattern DbContext come punto di accesso al database.
+
+Perché lo usiamo:
+- Produttività: meno codice da scrivere rispetto a SQL manuale
+- Type-safety: errori rilevati in fase di compilazione, non a runtime
+- Migration automatiche: genera script per aggiornare lo schema del database
+- LINQ: query espressive e leggibili in C#
+Nel nostro progetto, EF Core gestisce Users, RefreshTokens e Buste automaticamente.
+
+
+3. SQLITE
+---------
+
+Cos'è:
+SQLite è un database relazionale embedded, ovvero un database che vive in un singolo
+file senza bisogno di un server separato.
+
+Come funziona:
+Diversamente da SQL Server o PostgreSQL che richiedono un processo server separato,
+SQLite salva tutto in un file .db. L'applicazione legge e scrive direttamente su
+questo file. Supporta SQL standard, transazioni ACID, chiavi esterne.
+
+Perché lo usiamo:
+- Semplicità: nessuna configurazione, nessun server da gestire
+- Portabilità: il database è un singolo file facilmente spostabile
+- Ideale per sviluppo e piccole/medie applicazioni
+- Zero-configuration: perfetto per demo e prototipi
+Nel nostro caso, il file loginapp.db contiene tutte le tabelle (Users, RefreshTokens, Buste).
+
+
+4. MIGRATIONS (Migrazioni del Database)
+----------------------------------------
+
+Cos'è:
+Le migrations sono file di codice che descrivono come modificare lo schema del database
+nel tempo (aggiungere tabelle, colonne, indici, ecc.).
+
+Come funziona:
+Quando modifichi i Models (es. aggiungi una proprietà Role a User), EF Core può generare
+automaticamente una migration che contiene il codice per aggiornare il database. Le migration
+hanno un metodo Up() per applicare il cambiamento e Down() per annullarlo. EF Core tiene
+traccia di quali migration sono già state applicate usando una tabella speciale
+__EFMigrationsHistory.
+
+Perché lo usiamo:
+- Version control per il database: ogni cambiamento è tracciato
+- Deployment automatizzato: possiamo aggiornare database di produzione con sicurezza
+- Rollback: possiamo tornare indietro se qualcosa va male
+- Team collaboration: più sviluppatori possono evolvere lo schema in modo coordinato
+Nel progetto abbiamo usato migration per creare la tabella Buste e aggiungere la colonna Role.
+
+
+5. JWT (JSON Web Tokens)
+-------------------------
+
+Cos'è:
+JWT è uno standard per creare token di autenticazione che contengono informazioni (claims)
+in formato JSON, firmati crittograficamente.
+
+Come funziona:
+Un JWT è composto da tre parti separate da punti:
+- Header: tipo di token e algoritmo di firma
+- Payload: i dati (claims) come userId, email, role
+- Signature: firma crittografica per verificare che il token non sia stato modificato
+
+Il server genera il JWT dopo il login, il client lo salva e lo invia in ogni richiesta
+successiva nell'header Authorization: Bearer <token>. Il server verifica la firma e
+estrae le informazioni senza dover interrogare il database ogni volta.
+
+Perché lo usiamo:
+- Stateless: il server non deve memorizzare sessioni, scala meglio
+- Self-contained: tutte le info necessarie sono nel token stesso
+- Cross-domain: funziona bene con API separate dal frontend
+- Standard: librerie disponibili per ogni linguaggio
+Nel nostro caso, il JWT contiene userId, email e role per identificare l'utente autenticato.
+
+
+6. REFRESH TOKEN
+-----------------
+
+Cos'è:
+I refresh token sono token a lunga durata usati per ottenere nuovi access token (JWT)
+senza richiedere nuovamente username e password.
+
+Come funziona:
+Quando l'utente fa login, riceve due token:
+- Access Token (JWT): breve durata (15 minuti), usato per ogni richiesta API
+- Refresh Token: lunga durata (7 giorni), salvato nel database
+
+Quando l'access token scade, il client usa il refresh token per richiedere un nuovo
+access token. Se il refresh token viene rubato, può essere revocato nel database.
+
+Perché lo usiamo:
+- Sicurezza: access token breve limita il danno se rubato
+- User experience: l'utente resta autenticato per giorni senza re-login
+- Revoca: possiamo invalidare refresh token (es. logout da tutti i dispositivi)
+Nel nostro progetto, i refresh token sono salvati nella tabella RefreshTokens con flag
+IsRevoked per gestire logout e sicurezza.
+
+
+7. BCRYPT (Password Hashing)
+-----------------------------
+
+Cos'è:
+BCrypt è un algoritmo di hashing per password progettato per essere lento e resistente
+agli attacchi brute-force.
+
+Come funziona:
+Quando un utente registra una password, BCrypt la trasforma in una stringa hash
+irriconoscibile. Questo hash include un "salt" casuale che rende ogni hash unico
+anche per password identiche. L'algoritmo è intenzionalmente lento (configurabile)
+per rendere costosi gli attacchi che provano milioni di password.
+
+Perché lo usiamo:
+- Security-by-design: anche se il database viene rubato, le password sono protette
+- Salt automatico: previene rainbow table attacks
+- Adaptive: possiamo aumentare la lentezza col tempo (cost factor)
+- Standard: algoritmo testato e raccomandato per password
+Nel progetto, usiamo BCrypt.Net-Next per hashare le password prima di salvarle nel database.
+
+
+8. DEPENDENCY INJECTION (DI)
+-----------------------------
+
+Cos'è:
+Dependency Injection è un pattern di design dove le dipendenze di una classe vengono
+fornite dall'esterno invece di essere create internamente.
+
+Come funziona:
+Invece di scrivere "new DbContext()" dentro un controller, dichiariamo la dipendenza
+nel costruttore e il framework DI di ASP.NET Core la inietta automaticamente. Le
+dipendenze sono registrate all'avvio (in Program.cs) con scope diversi:
+- Scoped: una nuova istanza per ogni richiesta HTTP
+- Singleton: una sola istanza per tutta l'applicazione
+- Transient: una nuova istanza ogni volta che viene richiesta
+
+Perché lo usiamo:
+- Testability: facile sostituire dipendenze con mock nei test
+- Loose coupling: le classi non dipendono da implementazioni concrete
+- Lifecycle management: il framework gestisce creazione e dispose
+- Configuration: possiamo cambiare implementazioni senza modificare codice
+Nel nostro progetto, DbContext, AuthService e tutti i controller usano DI.
+
+
+9. REST API (Representational State Transfer)
+----------------------------------------------
+
+Cos'è:
+REST è uno stile architetturale per progettare API web basate su HTTP, dove le risorse
+sono identificate da URL e manipolate con metodi HTTP standard.
+
+Come funziona:
+Ogni risorsa (User, Busta) ha un URL base (es. /api/buste). Le operazioni CRUD sono
+mappate sui metodi HTTP:
+- GET: lettura (es. GET /api/buste/5 per leggere busta con id 5)
+- POST: creazione (es. POST /api/buste per creare nuova busta)
+- PUT/PATCH: modifica (es. PUT /api/buste/5 per aggiornare)
+- DELETE: eliminazione (es. DELETE /api/buste/5)
+
+Le risposte usano status code HTTP standard (200 OK, 201 Created, 404 Not Found, ecc.)
+e il corpo è tipicamente in JSON.
+
+Perché lo usiamo:
+- Standard universale: tutti i linguaggi e framework lo supportano
+- Stateless: ogni richiesta è indipendente, facilita scaling
+- Cacheable: le risposte GET possono essere cachate
+- Interfaccia uniforme: prevedibile e intuitivo
+La nostra API REST espone endpoint per auth, users, e buste seguendo le convenzioni REST.
+
+
+10. DTO (Data Transfer Objects)
+--------------------------------
+
+Cos'è:
+I DTO sono oggetti semplici usati per trasferire dati tra il client e il server,
+separati dai modelli del database.
+
+Come funziona:
+Invece di esporre direttamente le entità del database (User, Busta), creiamo classi
+separate (UserDto, CreateBustaDto, UpdateBustaDto) che contengono solo i campi
+necessari per una specifica operazione. I controller convertono tra entità e DTO.
+
+Perché lo usiamo:
+- Security: non esponiamo campi sensibili come PasswordHash
+- Versioning: possiamo cambiare il database senza rompere l'API
+- Validation: ogni DTO ha validazioni specifiche per il suo scopo
+- Performance: trasmettiamo solo i dati necessari
+Nel progetto, CreateBustaDto include solo campi per la creazione, UserResponse esclude
+la password, ecc.
+
+
+11. CORS (Cross-Origin Resource Sharing)
+-----------------------------------------
+
+Cos'è:
+CORS è un meccanismo di sicurezza dei browser che controlla se una pagina web può fare
+richieste HTTP a un dominio diverso da quello che l'ha servita.
+
+Come funziona:
+Di default, i browser bloccano richieste cross-origin per sicurezza (Same-Origin Policy).
+Il server deve esplicitamente permettere richieste da altri domini usando header HTTP
+specifici (Access-Control-Allow-Origin, ecc.). ASP.NET Core fornisce middleware CORS
+che aggiunge questi header automaticamente.
+
+Perché lo usiamo:
+- Frontend separato: Angular (localhost:4200) deve chiamare API (localhost:5082)
+- Security: permettiamo solo le origini che specifichiamo
+- Preflight: gestisce automaticamente le richieste OPTIONS del browser
+Nel nostro Program.cs, configuriamo CORS per permettere richieste da localhost:4200.
+
+
+12. ANGULAR
+-----------
+
+Cos'è:
+Angular è un framework frontend completo di Google per costruire Single Page Applications
+(SPA) usando TypeScript.
+
+Come funziona:
+Angular organizza l'applicazione in componenti (pezzi riutilizzabili di UI), servizi
+(logica condivisa), e moduli. Usa un sistema di template con data binding bidirezionale,
+dependency injection, routing client-side. Il codice TypeScript viene compilato in
+JavaScript che il browser può eseguire.
+
+Perché lo usiamo:
+- Framework completo: routing, forms, HTTP client inclusi
+- TypeScript: type-safety riduce errori
+- Componentizzazione: UI modulare e riutilizzabile
+- Ecosistema: Material Design, RxJS, CLI potente
+- Enterprise-ready: usato in grandi applicazioni
+Nel progetto, Angular gestisce tutta la UI: login, dashboard, gestione buste e utenti.
+
+
+13. TYPESCRIPT
+--------------
+
+Cos'è:
+TypeScript è un superset di JavaScript che aggiunge tipi statici e altre features,
+compilato poi in JavaScript normale.
+
+Come funziona:
+Scrivi codice TypeScript con annotazioni di tipo (es. user: User), interfacce, enums.
+Il compilatore TypeScript (tsc) verifica i tipi durante la compilazione e produce
+JavaScript che il browser può eseguire. Gli errori di tipo sono rilevati prima
+dell'esecuzione.
+
+Perché lo usiamo:
+- Type safety: molti errori prevenuti a compile-time
+- Intellisense: autocompletamento migliore negli editor
+- Refactoring sicuro: il compilatore trova tutti gli usi
+- Features moderne: async/await, decorators, generics
+Angular è scritto in TypeScript e lo richiede per lo sviluppo.
+
+
+14. RXJS (Reactive Extensions for JavaScript)
+----------------------------------------------
+
+Cos'è:
+RxJS è una libreria per programmare con stream di eventi asincroni usando gli Observable.
+
+Come funziona:
+Un Observable rappresenta un flusso di valori nel tempo (es. risposte HTTP, eventi utente).
+Puoi trasformare questi flussi con operatori come map, filter, merge. Gli Observer si
+"abbonano" (subscribe) agli Observable per ricevere i valori.
+
+Perché lo usiamo:
+- Async handling: gestisce elegantemente operazioni asincrone
+- Composability: combinare stream complessi diventa semplice
+- Cancellation: unsubscribe annulla richieste HTTP in corso
+- Angular integration: HttpClient ritorna Observable
+Nel progetto, ogni chiamata HTTP (login, getBuste, ecc.) ritorna un Observable.
+
+
+15. ANGULAR SIGNALS
+--------------------
+
+Cos'è:
+Signals è un nuovo sistema di reattività in Angular (v16+) che permette di gestire
+stato reattivo in modo più semplice degli Observable in certi casi.
+
+Come funziona:
+Un signal è un contenitore per un valore che notifica automaticamente quando il valore
+cambia. Componenti che leggono un signal vengono automaticamente aggiornati quando
+cambia. Più semplice di BehaviorSubject per stato sincro.
+
+Perché lo usiamo:
+- Semplicità: sintassi più pulita di BehaviorSubject
+- Performance: change detection ottimizzata
+- Developer experience: meno boilerplate
+Nel AuthService usiamo signals per currentUser e isAuthenticated invece di BehaviorSubject.
+
+
+16. ANGULAR STANDALONE COMPONENTS
+----------------------------------
+
+Cos'è:
+Standalone components sono componenti Angular che non richiedono un NgModule,
+semplificando l'architettura dell'app.
+
+Come funziona:
+Invece di dichiarare componenti in moduli, ogni componente dichiara le sue dipendenze
+direttamente con l'array imports. Questo rende i componenti più modulari e riduce
+il boilerplate.
+
+Perché lo usiamo:
+- Semplicità: meno configurazione, codice più chiaro
+- Lazy loading più facile: ogni componente è self-contained
+- Tree-shaking migliore: solo ciò che serve viene incluso
+Tutti i componenti nel progetto (LoginComponent, DashboardComponent, ecc.) sono standalone.
+
+
+17. ANGULAR MATERIAL
+---------------------
+
+Cos'è:
+Angular Material è una libreria di componenti UI che implementa Material Design di Google.
+
+Come funziona:
+Fornisce componenti pronti all'uso (button, card, table, dialog, form fields) con
+stili Material Design. Ogni componente è un Angular component che importi e usi nei
+tuoi template.
+
+Perché lo usiamo:
+- UI professionale: design coerente e moderno out-of-the-box
+- Accessibilità: componenti accessibili di default
+- Responsive: funziona su mobile e desktop
+- Temi: personalizzabile con temi CSS
+Usiamo Mat-Table per le tabelle, Mat-Dialog per i popup, Mat-Card per i contenitori, ecc.
+
+
+18. ANGULAR ROUTER
+-------------------
+
+Cos'è:
+Angular Router è il sistema di navigazione di Angular per costruire Single Page Applications
+con più "pagine" (viste).
+
+Come funziona:
+Definisci routes che mappano URL a componenti (es. /login -> LoginComponent). Il router
+intercetta click sui link e cambia di URL, carica il componente corrispondente senza
+ricaricare la pagina. Supporta parametri (es. /users/:id), child routes, lazy loading.
+
+Perché lo usiamo:
+- SPA experience: navigazione istantanea senza page reload
+- Deep linking: ogni vista ha un URL condivisibile
+- Browser history: back/forward button funzionano
+- Guards: proteggere route (es. solo utenti autenticati)
+Nel progetto, le route includono login, register, dashboard, buste, user-management.
+
+
+19. ROUTE GUARDS
+----------------
+
+Cos'è:
+I Guards sono servizi Angular che decidono se una route può essere attivata o meno,
+usati per proteggere pagine che richiedono autenticazione o permessi.
+
+Come funziona:
+Un guard implementa l'interfaccia CanActivate (o CanActivateFn) e ritorna true/false
+per permettere o bloccare l'accesso. Il router chiama il guard prima di caricare il
+componente. Se ritorna false, può redirect l'utente (es. a /login).
+
+Perché lo usiamo:
+- Security: previene accesso a pagine riservate
+- UX: redirect automatico se non autenticati
+- Authorization: verificare ruoli (es. solo admin)
+Abbiamo AuthGuard (solo utenti autenticati) e GuestGuard (solo utenti non autenticati
+per login/register).
+
+
+20. HTTP INTERCEPTOR
+--------------------
+
+Cos'è:
+Gli HTTP Interceptor in Angular intercettano tutte le richieste e risposte HTTP,
+permettendo di modificarle prima che vengano inviate o elaborate.
+
+Come funziona:
+Un interceptor implementa HttpInterceptor e il metodo intercept(). Può aggiungere
+header (es. Authorization), gestire errori globalmente, loggare richieste, ecc.
+Viene eseguito automaticamente per ogni chiamata HttpClient.
+
+Perché lo usiamo:
+- Token automatico: aggiungiamo JWT a ogni richiesta senza ripeterlo
+- Error handling: gestire 401 Unauthorized globalmente
+- Refresh token: rinnovare token scaduti automaticamente
+Il nostro AuthInterceptor aggiunge il JWT header e gestisce il refresh automatico del token.
+
+
+21. JSON (JavaScript Object Notation)
+--------------------------------------
+
+Cos'è:
+JSON è un formato testuale per rappresentare dati strutturati, diventato lo standard
+de facto per scambiare dati tra client e server.
+
+Come funziona:
+JSON rappresenta oggetti come coppie chiave-valore: {"name": "Mario", "age": 30}.
+Supporta stringhe, numeri, booleani, array, oggetti nidificati, null. È facile da
+leggere per umani e da parsare per computer. JavaScript ha JSON.parse() e JSON.stringify()
+built-in.
+
+Perché lo usiamo:
+- Standard universale: tutti i linguaggi lo supportano
+- Leggibile: più semplice di XML
+- Leggero: meno verboso di XML
+- Type-safe: si mappa bene su oggetti TypeScript/C#
+Tutti i dati tra Angular e ASP.NET Core sono scambiati in JSON (richieste e risposte).
+
+
+22. DOCKER
+----------
+
+Cos'è:
+Docker è una piattaforma per creare, distribuire ed eseguire applicazioni in container,
+ambienti isolati che contengono tutto il necessario per far girare l'app.
+
+Come funziona:
+Un Dockerfile definisce come costruire un'immagine (sistema operativo, dipendenze,
+codice). Docker crea un container da questa immagine, un processo isolato che ha
+il suo filesystem, rete, ecc. I container sono leggeri (condividono il kernel OS)
+e portabili (girano uguale su qualsiasi macchina con Docker).
+
+Perché lo usiamo:
+- Consistency: "funziona sulla mia macchina" risolto, uguale ovunque
+- Isolation: ogni servizio ha il suo ambiente senza conflitti
+- Portability: deploy su qualsiasi cloud o server
+- Scalability: facile creare/distruggere container
+Nel progetto, abbiamo Dockerfile per backend e frontend che creano immagini eseguibili.
+
+
+23. DOCKER COMPOSE
+-------------------
+
+Cos'è:
+Docker Compose è uno strumento per definire e gestire applicazioni multi-container,
+tipicamente usando un file docker-compose.yml.
+
+Come funziona:
+Il file YAML descrive tutti i servizi dell'app (backend, frontend, database, ecc.),
+le loro configurazioni, le reti, i volumi. Con un comando (docker-compose up) puoi
+avviare tutti i servizi insieme. Compose gestisce le dipendenze tra servizi.
+
+Perché lo usiamo:
+- Multi-service: la nostra app ha backend + frontend
+- Networking: i container possono comunicare facilmente
+- Configuration: tutto centralizzato in un file
+- Developer experience: setup ambiente con un comando
+Il nostro docker-compose.yml definisce backend (porta 5082) e frontend (porta 80).
+
+
+24. MULTI-STAGE DOCKER BUILDS
+------------------------------
+
+Cos'è:
+Multi-stage builds è una tecnica Docker per ottimizzare le immagini usando più
+fasi di build nello stesso Dockerfile.
+
+Come funziona:
+Il Dockerfile ha più istruzioni FROM, ognuna inizia un nuovo stage. Il primo stage
+compila l'app con tutti gli strumenti necessari (SDK), l'ultimo stage (runtime) copia
+solo i binari compilati con un'immagine base minimale. Questo riduce drasticamente
+la dimensione dell'immagine finale.
+
+Perché lo usiamo:
+- Dimensione immagine: solo runtime + binari, non SDK
+- Security: meno software = meno vulnerabilità
+- Performance: immagini più piccole = deploy più veloci
+Il Dockerfile del backend usa mcr.microsoft.com/dotnet/sdk per build e /aspnet per runtime.
+
+
+24.1 IMPLEMENTAZIONE DOCKER NEL NOSTRO PROGETTO
+------------------------------------------------
+
+Cos'è:
+Questa sezione descrive come abbiamo implementato Docker concretamente in questa
+applicazione, dettagliando la configurazione specifica di ogni componente.
+
+Come è strutturato:
+L'applicazione è divisa in due container separati:
+
+1. BACKEND CONTAINER (login-api):
+   - Build: Usa multi-stage build con .NET SDK 8.0 per compilare e ASP.NET 8.0 per runtime
+   - Porta: Esposta sulla porta 5000 (mappata su host:5000)
+   - Database: SQLite salvato in un volume persistente /app/data
+   - Variabili ambiente:
+     * ASPNETCORE_ENVIRONMENT=Production
+     * ASPNETCORE_URLS=http://+:5000
+     * ConnectionStrings__DefaultConnection con path al database nel volume
+     * JwtSettings (SecretKey, Issuer, Audience, Expiration)
+     * Cors__AllowedOrigins configurato per accettare richieste dal frontend
+   - Restart policy: unless-stopped (riavvio automatico se crasha)
+
+2. FRONTEND CONTAINER (login-frontend):
+   - Build: Multi-stage con Node 20 Alpine per build Angular e Nginx Alpine per runtime
+   - Porta: Esposta sulla porta 80 (standard HTTP)
+   - Web server: Nginx configurato per:
+     * Servire i file statici Angular da /usr/share/nginx/html
+     * Routing SPA (try_files per gestire route Angular)
+     * Caching aggressivo per asset statici (1 anno)
+     * Compressione Gzip per file testuali
+     * Security headers (X-Frame-Options, X-Content-Type-Options, X-XSS-Protection)
+   - Dipendenze: depends_on backend (si avvia dopo il backend)
+
+3. NETWORKING:
+   - Rete bridge dedicata: login-network
+   - I container comunicano tra loro usando i nomi dei servizi
+   - Il frontend può raggiungere il backend tramite http://backend:5000
+   - Isolamento: i container sono sulla stessa rete privata
+
+4. VOLUMES:
+   - backend-data: Volume persistente locale per il database SQLite
+   - Garantisce che i dati sopravvivano al riavvio/rimozione dei container
+   - Il database si trova in /app/data/loginapp.db dentro il container
+
+Flusso di build e deployment:
+1. docker-compose build: Compila entrambe le immagini
+   - Backend: dotnet restore → dotnet build → dotnet publish → copia binari
+   - Frontend: npm ci → npm run build → copia dist/ in nginx
+
+2. docker-compose up: Avvia i container
+   - Crea la rete login-network
+   - Crea il volume backend-data (se non esiste)
+   - Avvia backend sulla porta 5000
+   - Avvia frontend sulla porta 80
+   - I container restano in esecuzione
+
+3. Accesso all'applicazione:
+   - Frontend: http://localhost (porta 80)
+   - Backend API: http://localhost:5000/api/...
+   - Il frontend dentro il container chiama il backend tramite la rete interna
+
+Vantaggi di questa configurazione:
+- Isolation: Backend e frontend isolati in container separati
+- Portability: Tutto l'ambiente è definito nel codice (Infrastructure as Code)
+- Consistency: Stessa configurazione in dev, staging, production
+- Scalability: Possiamo scalare frontend e backend indipendentemente
+- Security: JWT secret può essere fornito come variabile ambiente o secret
+- Persistence: Il database sopravvive ai riavvii grazie al volume
+
+Comandi comuni:
+- Avvio: docker-compose up -d (detached mode, in background)
+- Stop: docker-compose down (ferma e rimuove container)
+- Ricostruzione: docker-compose up --build (rebuild delle immagini)
+- Logs: docker-compose logs -f backend/frontend
+- Database: docker volume inspect login-app_backend-data (info sul volume)
+
+File di configurazione:
+- docker-compose.yml: Orchestrazione multi-container
+- backend/Dockerfile: Build del backend .NET
+- frontend/Dockerfile: Build del frontend Angular
+- frontend/nginx.conf: Configurazione Nginx per SPA
+
+Questo setup rappresenta una configurazione production-ready con best practices
+per sicurezza, performance e affidabilità.
+
+
+25. NGINX
+---------
+
+Cos'è:
+Nginx è un web server ad alte prestazioni usato anche come reverse proxy e load balancer.
+
+Come funziona:
+Nel nostro caso, Nginx serve i file statici di Angular (HTML, JS, CSS) e fa da reverse
+proxy per le chiamate API, inoltrando richieste a /api al backend. Questo permette di
+avere frontend e backend sulla stessa porta evitando problemi CORS.
+
+Perché lo usiamo:
+- Performance: estremamente veloce per file statici
+- Reverse proxy: frontend e backend unificati
+- Production-ready: usato da milioni di siti
+- Configurabile: routing, caching, compression
+Il frontend Docker usa Nginx per servire Angular e proxy le API al backend.
+
+
+26. ROLE-BASED ACCESS CONTROL (RBAC)
+-------------------------------------
+
+Cos'è:
+RBAC è un modello di sicurezza dove i permessi sono assegnati a ruoli, e gli utenti
+hanno ruoli. Invece di gestire permessi per ogni utente, gestisci ruoli.
+
+Come funziona:
+Definiamo ruoli (Reader, Writer, Admin) con permessi diversi. Ogni utente ha un ruolo.
+Il sistema verifica il ruolo prima di permettere un'azione. Nel backend, usiamo il
+claim "role" nel JWT e controlliamo await GetCurrentUserRole(). Nel frontend,
+nascondiamo/disabilitiamo UI in base al ruolo.
+
+Perché lo usiamo:
+- Scalability: aggiungere utenti è facile, assegni solo un ruolo
+- Maintainability: cambi i permessi di un ruolo una volta
+- Audit: chiaro chi può fare cosa
+- Security: principio del minimo privilegio
+Nel progetto: Reader (sola lettura), Writer (CRUD buste), Admin (+ gestione utenti).
+
+
+27. CLAIMS-BASED AUTHENTICATION
+--------------------------------
+
+Cos'è:
+Claims-based authentication è un modello dove l'identità di un utente è rappresentata
+da un set di "claims" (affermazioni), come "userId=5", "role=Admin", "email=...".
+
+Come funziona:
+Dopo il login, il server genera un token (JWT) contenente i claims dell'utente.
+Ad ogni richiesta, il server legge i claims dal token per sapere chi è l'utente
+e cosa può fare. Non serve interrogare il database per ogni richiesta.
+
+Perché lo usiamo:
+- Stateless: server non memorizza sessioni
+- Performance: tutte le info nel token
+- Flexible: possiamo aggiungere claims personalizzati
+Nel nostro JWT includiamo ClaimTypes.NameIdentifier (userId), ClaimTypes.Email, e "role".
+
+
+28. PASSWORD VALIDATION
+-----------------------
+
+Cos'è:
+Password validation è il processo di verificare che una password soddisfi requisiti
+di sicurezza (lunghezza minima, complessità, ecc.).
+
+Come funziona:
+Nel backend, usiamo Data Annotations ([MinLength]) sul DTO RegisterRequest. Nel frontend,
+usiamo Validators.required e Validators.minLength in Angular Forms. Questo previene
+password deboli sia lato client che server.
+
+Perché lo usiamo:
+- Security: password forti resistono a brute-force
+- Compliance: molti standard richiedono requisiti minimi
+- User guidance: feedback immediato se la password è debole
+Nel progetto, password minimo 6 caratteri (dovrebbe essere più alta in produzione).
+
+
+29. FOREIGN KEYS E RELAZIONI
+-----------------------------
+
+Cos'è:
+Le foreign key sono vincoli di database che assicurano l'integrità referenziale,
+collegando una tabella ad un'altra.
+
+Come funziona:
+Ogni Busta ha UserId che referenzia Users.Id. Se provi a creare una Busta con UserId
+inesistente, il database rifiuta l'operazione. Se provi a cancellare un User con Buste,
+puoi configurare il comportamento (cascade delete, restrict, ecc.).
+
+Perché lo usiamo:
+- Data integrity: impossibile avere dati orfani
+- Relazioni: modellare relazioni one-to-many, many-to-many
+- Cascading: delete/update automatici
+In EF Core, configuriamo relazioni con navigation properties e Fluent API.
+
+
+30. ENVIRONMENT CONFIGURATION
+------------------------------
+
+Cos'è:
+Environment configuration permette di avere settings diversi per sviluppo, staging,
+produzione (es. URL API diverse, chiavi diverse).
+
+Come funziona:
+Angular ha file environment.ts (sviluppo) e environment.prod.ts (produzione). Durante
+la build (ng build --configuration production), Angular usa il file corretto. .NET
+ha appsettings.json e appsettings.Development.json, caricati in base all'ambiente.
+
+Perché lo usiamo:
+- Flexibility: stesso codice, configurazioni diverse
+- Security: chiavi di produzione non in sviluppo
+- Debugging: log verbose in dev, minimal in prod
+Nel progetto, l'API URL di Angular cambia tra sviluppo (localhost:5082) e produzione.
+
+
+31. DATEPICKER E GESTIONE DATE
+-------------------------------
+
+Cos'è:
+I Datepicker sono componenti UI per selezionare date in modo user-friendly. La gestione
+date è complessa per timezone, formati, ecc.
+
+Come funziona:
+Angular Material fornisce MatDatepicker integrato con i forms. Le date sono oggetti
+JavaScript Date lato client, convertite in ISO 8601 string (es. "2024-01-15T00:00:00Z")
+per inviarle al server. Il backend usa DateTime di .NET. EF Core salva come INTEGER
+in SQLite (Unix timestamp).
+
+Perché lo usiamo:
+- UX: più facile di scrivere date manualmente
+- Validation: previene date invalide
+- Internationalization: formati localizzati
+Nel progetto, le Buste hanno DataRiferimento, DataChiusura, DataRitiro gestite con datepicker.
+
+
+32. RESPONSIVE DESIGN
+----------------------
+
+Cos'è:
+Responsive design è l'approccio di costruire UI che si adattano a schermi di dimensioni
+diverse (desktop, tablet, mobile).
+
+Come funziona:
+Usiamo CSS media queries, flexbox, CSS grid per layout fluidi. Angular Material
+components sono responsive di default. Il layout cambia in base alla larghezza
+dello schermo.
+
+Perché lo usiamo:
+- Multi-device: l'app funziona su telefoni, tablet, desktop
+- User experience: interfaccia ottimizzata per ogni schermo
+- Accessibility: più facile navigare su touch screen
+I componenti del progetto usano Material flex layout e sono testati su vari schermi.
+
+
+33. FORM VALIDATION
+--------------------
+
+Cos'è:
+Form validation assicura che i dati inseriti dagli utenti siano corretti prima di
+inviarli al server.
+
+Come funziona:
+Angular Reactive Forms forniscono Validators (required, minLength, email, pattern, ecc.).
+I validatori si applicano ai form controls e Angular aggiorna automaticamente lo stato
+del form (valid/invalid). Mostriamo errori solo quando l'utente ha interagito con il campo.
+
+Perché lo usiamo:
+- Data quality: dati corretti entrano nel sistema
+- UX: feedback immediato, meno errori server
+- Security: prima linea di difesa contro input malevoli
+Tutti i form (login, register, crea busta) hanno validatori Angular + backend validation.
+
+
+34. ERROR HANDLING
+------------------
+
+Cos'è:
+Error handling è il processo di gestire errori che possono verificarsi durante
+l'esecuzione (network failure, validation errors, bug).
+
+Come funziona:
+In Angular, usiamo RxJS catchError per gestire errori HTTP. Mostriamo messaggi
+all'utente con MatSnackBar. Nel backend, usiamo try-catch e ritorniamo status code
+appropriati (400 Bad Request, 404 Not Found, 500 Internal Server Error).
+
+Perché lo usiamo:
+- UX: informare l'utente se qualcosa va male
+- Debugging: log dettagliati per troubleshooting
+- Resilience: l'app non crasha per errori
+Nel progetto, ogni chiamata HTTP ha error handling con feedback visivo.
+
+
+35. LOADING STATES
+-------------------
+
+Cos'è:
+Loading states sono indicatori visivi che mostrano all'utente che un'operazione è
+in corso (spinner, skeleton screens, ecc.).
+
+Come funziona:
+Manteniamo una variabile booleana isLoading nel componente. Prima di una chiamata
+HTTP la settiamo true, dopo (success o error) la settiamo false. Nel template,
+mostriamo uno spinner se isLoading è true.
+
+Perché lo usiamo:
+- UX: l'utente sa che sta succedendo qualcosa
+- Feedback: previene click multipli durante il caricamento
+- Perceived performance: l'app sembra più responsive
+Nel componente Buste, mostriamo "Caricamento in corso..." mentre si caricano i dati.
+
+
+36. CODE ORGANIZATION (Separation of Concerns)
+-----------------------------------------------
+
+Cos'è:
+Separation of Concerns è un principio di design dove si separano diverse
+responsabilità in moduli/file distinti.
+
+Come funziona:
+Nel backend: Controllers (gestiscono HTTP), Services (logica business), Models (dati),
+DTOs (trasferimento), Data (accesso database). Nel frontend: Components (UI), Services
+(logica/HTTP), Models (tipi), Guards (sicurezza), Interceptors (HTTP middleware).
+
+Perché lo usiamo:
+- Maintainability: più facile trovare e modificare codice
+- Testability: testare singole parti in isolamento
+- Reusability: servizi riutilizzabili in più componenti
+- Scalability: aggiungere features senza toccare codice esistente
+Tutta l'app segue questa struttura per massima chiarezza.
+
+
+37. AUTHORIZATION ATTRIBUTES
+-----------------------------
+
+Cos'è:
+Gli Authorization Attributes in ASP.NET Core sono decoratori che controllano l'accesso
+agli endpoint API.
+
+Come funziona:
+[Authorize] su un controller/action richiede autenticazione. [AllowAnonymous] permette
+accesso pubblico. Possiamo specificare ruoli: [Authorize(Roles = "Admin")]. Il middleware
+di ASP.NET Core verifica automaticamente prima di eseguire l'action.
+
+Perché lo usiamo:
+- Declarative security: chiaro a colpo d'occhio chi può accedere
+- Centralized: la logica auth è nel framework, non sparsa nel codice
+- Testable: possiamo testare che gli attributi siano corretti
+BusteController ha [Authorize] globale, UsersController richiede ruolo Admin.
+
+
+38. ASYNC/AWAIT
+---------------
+
+Cos'è:
+Async/await è una sintassi per scrivere codice asincrono in modo più leggibile,
+disponibile in C# e TypeScript/JavaScript.
+
+Come funziona:
+Una funzione marcata async ritorna una Promise (TS) o Task (C#). All'interno, await
+pausa l'esecuzione fino al completamento di un'operazione asincrona (es. query database,
+HTTP request) senza bloccare il thread. Il codice sembra sincrono ma è non-bloccante.
+
+Perché lo usiamo:
+- Performance: non blocchiamo thread durante I/O
+- Readability: più facile di callback o promise chains
+- Error handling: try-catch funziona normalmente
+Quasi tutti i metodi del backend e molte operazioni frontend usano async/await.
+
+
+39. LINQ (Language Integrated Query)
+-------------------------------------
+
+Cos'è:
+LINQ è una feature di C# per fare query su collezioni di dati con sintassi integrata
+nel linguaggio, simile a SQL.
+
+Come funziona:
+Invece di loop for/foreach, usiamo operatori LINQ come Where, Select, OrderBy, FirstOrDefault.
+EF Core traduce LINQ in SQL quando query il database. È fortemente tipizzato e
+supporta intellisense.
+
+Perché lo usiamo:
+- Expressiveness: query complesse in poche righe
+- Type-safe: errori a compile-time
+- Composable: concatenare operazioni facilmente
+- Database-agnostic: stesso codice per SQL Server, SQLite, PostgreSQL
+Tutti i controller usano LINQ per filtrare, ordinare, proiettare dati.
+
+
+40. MIDDLEWARE PIPELINE
+------------------------
+
+Cos'è:
+La middleware pipeline in ASP.NET Core è una serie di componenti che processano ogni
+richiesta HTTP in ordine.
+
+Come funziona:
+Ogni middleware può esaminare/modificare la richiesta, passarla al prossimo middleware,
+e processare la risposta. L'ordine è critico: autenticazione prima di autorizzazione,
+CORS prima di routing, ecc. Configurati in Program.cs con app.UseXxx().
+
+Perché lo usiamo:
+- Modular: ogni concern è un middleware separato
+- Reusable: middleware di terze parti
+- Controllable: ordine preciso di esecuzione
+Nel progetto: CORS -> Authentication -> Authorization -> Controllers -> Exception handling.
+
+
+41. NAVIGATION MENU E UI STATE
+-------------------------------
+
+Cos'è:
+Una navigation menu dinamica che cambia in base allo stato dell'utente (autenticato,
+ruolo, ecc.).
+
+Come funziona:
+Il NavigationComponent usa AuthService signals per sapere se l'utente è loggato
+e il suo ruolo. Con *ngIf mostriamo/nascondiamo link in base a questi stati.
+Ad esempio, "User Management" è visibile solo agli Admin.
+
+Perché lo usiamo:
+- UX: menù personalizzato per ogni utente
+- Security: non mostrare opzioni inaccessibili
+- Guidance: l'utente vede solo ciò che può fare
+Il menu cambia dinamicamente quando fai login/logout o cambi ruolo.
+
+
+42. DIALOG COMPONENTS
+----------------------
+
+Cos'è:
+I Dialog (o Modal) sono finestre popup sovrapposte al contenuto principale, usate
+per form, conferme, dettagli.
+
+Come funziona:
+Angular Material fornisce MatDialog service. Apri un dialog con dialog.open(Component)
+passando dati. Il dialog è un componente standalone renderizzato sopra l'app.
+afterClosed() observable notifica quando l'utente chiude il dialog.
+
+Perché lo usiamo:
+- UX: focus su un'azione senza cambiare pagina
+- Flexibility: riutilizzabile in contesti diversi
+- Accessibility: gestione focus e escape automatica
+Usiamo dialog per creare/modificare buste e utenti.
+
+
+43. SNACKBAR NOTIFICATIONS
+---------------------------
+
+Cos'è:
+Snackbar sono notifiche temporanee che appaiono in basso nello schermo per dare
+feedback all'utente.
+
+Come funziona:
+MatSnackBar service di Angular Material mostra messaggi con durata configurabile.
+Si chiudono automaticamente o cliccando un bottone. Non bloccano l'interazione
+con l'app.
+
+Perché lo usiamo:
+- UX: feedback immediato su azioni (success, error)
+- Non-intrusive: non bloccano l'utente
+- Consistency: stesso stile per tutte le notifiche
+Mostriamo snackbar per confermare creazione/modifica/eliminazione o segnalare errori.
+
+
+RIEPILOGO STACK TECNOLOGICO
+============================
+
+Backend:
+- .NET 8.0 + ASP.NET Core (runtime e web framework)
+- Entity Framework Core 8.0 (ORM)
+- SQLite (database)
+- JWT + Refresh Token (autenticazione)
+- BCrypt (password hashing)
+- LINQ (query dati)
+- Dependency Injection (pattern)
+
+Frontend:
+- Angular 17+ (framework SPA)
+- TypeScript (linguaggio)
+- RxJS (programmazione reattiva)
+- Angular Material (UI components)
+- Signals (gestione stato)
+- Reactive Forms (form con validazione)
+- Router + Guards (navigazione e sicurezza)
+- HTTP Interceptor (gestione token)
+
+Infrastruttura:
+- Docker + Docker Compose (containerizzazione)
+- Nginx (web server e reverse proxy)
+- Multi-stage builds (ottimizzazione immagini)
+
+Sicurezza:
+- Role-Based Access Control (RBAC)
+- Claims-based authentication
+- CORS configuration
+- Authorization attributes
+- Password hashing con BCrypt
+- Token expiration e refresh
+
+Metodologie:
+- REST API design
+- DTO pattern
+- Separation of concerns
+- Async/await programming
+- Error handling e validation
+- Responsive design
+
+Questa applicazione rappresenta un esempio completo di architettura moderna web,
+con frontend SPA separato da backend API, containerizzato e pronto per il deploy.
+Ogni tecnologia è stata scelta per risolvere problemi specifici seguendo best practices
+dell'industria.

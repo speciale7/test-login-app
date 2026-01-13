@@ -1,7 +1,7 @@
 <mat-toolbar color="primary" class="navigation-toolbar">
   <span class="app-name" routerLink="/">
     <mat-icon>lock</mat-icon>
-    Login App
+    CIGIERRE App
   </span>
 
   <span class="spacer"></span>
@@ -9,11 +9,11 @@
   <div class="nav-links" *ngIf="!authService.isAuthenticated()">
     <button mat-button routerLink="/login">
       <mat-icon>login</mat-icon>
-      Login
+      Accedi
     </button>
     <button mat-raised-button color="accent" routerLink="/register">
       <mat-icon>person_add</mat-icon>
-      Register
+      Registrati
     </button>
   </div>
 
@@ -29,11 +29,35 @@
     <mat-menu #userMenu="matMenu">
       <button mat-menu-item routerLink="/dashboard">
         <mat-icon>dashboard</mat-icon>
-        Dashboard
+        Home
+      </button>
+      <button mat-menu-item routerLink="/buste-contanti">
+        <mat-icon>inventory_2</mat-icon>
+        Buste Contanti
+      </button>
+      <button mat-menu-item routerLink="/cassa-intelligente">
+        <mat-icon>point_of_sale</mat-icon>
+        Cassa Intelligente
+      </button>
+      <button mat-menu-item routerLink="/fondo-spese">
+        <mat-icon>account_balance_wallet</mat-icon>
+        Fondo Spese
+      </button>
+      <button mat-menu-item routerLink="/fondo-cassa">
+        <mat-icon>savings</mat-icon>
+        Fondo Cassa
+      </button>
+      <button mat-menu-item routerLink="/sovv-monetaria">
+        <mat-icon>payments</mat-icon>
+        Sovv. Monetaria
+      </button>
+      <button mat-menu-item routerLink="/user-management" *ngIf="authService.currentUser()?.role === 2">
+        <mat-icon>people</mat-icon>
+        Gestione Utenti
       </button>
       <button mat-menu-item (click)="onLogout()">
         <mat-icon>logout</mat-icon>
-        Logout
+        Esci
       </button>
     </mat-menu>
   </div>

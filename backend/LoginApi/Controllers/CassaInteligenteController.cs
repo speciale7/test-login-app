@@ -4,11 +4,14 @@ using LoginApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LoginApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    // NOTE: Keep this explicit to match the frontend route (`/api/CassaIntelligente`).
+    // The controller class name contains a single 'l' (Inteligente) for historical reasons.
+    [Route("api/CassaIntelligente")]
     [Authorize]
     public class CassaInteligenteController : ControllerBase
     {
@@ -19,6 +22,24 @@ namespace LoginApi.Controllers
         {
             _context = context;
             _logger = logger;
+        }
+
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.Parse(userIdClaim ?? "0");
+        }
+
+        private async Task<UserRole> GetCurrentUserRole()
+        {
+            var userId = GetCurrentUserId();
+            var user = await _context.Users.FindAsync(userId);
+            return user?.Role ?? UserRole.Reader;
+        }
+
+        private static bool CanWrite(UserRole role)
+        {
+            return role == UserRole.Writer || role == UserRole.Admin;
         }
 
         [HttpGet]
@@ -105,6 +126,12 @@ namespace LoginApi.Controllers
         {
             try
             {
+                var userRole = await GetCurrentUserRole();
+                if (!CanWrite(userRole))
+                {
+                    return Forbid(); // 403 Forbidden for Reader users
+                }
+
                 var item = new BanconoteWithdrawalAutomatic
                 {
                     IdStore = dto.IdStore,
@@ -151,6 +178,12 @@ namespace LoginApi.Controllers
         {
             try
             {
+                var userRole = await GetCurrentUserRole();
+                if (!CanWrite(userRole))
+                {
+                    return Forbid(); // 403 Forbidden for Reader users
+                }
+
                 var item = await _context.BanconoteWithdrawalAutomatic.FindAsync(id);
 
                 if (item == null)
@@ -182,6 +215,12 @@ namespace LoginApi.Controllers
         {
             try
             {
+                var userRole = await GetCurrentUserRole();
+                if (!CanWrite(userRole))
+                {
+                    return Forbid(); // 403 Forbidden for Reader users
+                }
+
                 var item = await _context.BanconoteWithdrawalAutomatic.FindAsync(id);
 
                 if (item == null)

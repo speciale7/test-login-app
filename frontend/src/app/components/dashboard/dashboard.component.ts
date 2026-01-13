@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +12,7 @@ import { User } from '../../models/auth.model';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     MatCardModule,
     MatButtonModule,
     MatIconModule
@@ -44,7 +46,7 @@ export class DashboardComponent implements OnInit {
   getJoinedDate(): string {
     if (!this.user) return '';
     const date = new Date(this.user.createdAt);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('it-IT', { 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 

@@ -1,6 +1,6 @@
 <div class="dashboard-container">
   <div class="dashboard-content">
-    <h1>Welcome to Your Dashboard</h1>
+    <h1>Benvenuto nella tua Home</h1>
 
     <mat-card class="user-card" *ngIf="user">
       <mat-card-header>
@@ -16,7 +16,7 @@
           <div class="info-item">
             <mat-icon>badge</mat-icon>
             <div class="info-content">
-              <div class="info-label">User ID</div>
+              <div class="info-label">ID Utente</div>
               <div class="info-value">{{ user.id }}</div>
             </div>
           </div>
@@ -32,7 +32,7 @@
           <div class="info-item">
             <mat-icon>calendar_today</mat-icon>
             <div class="info-content">
-              <div class="info-label">Member Since</div>
+              <div class="info-label">Membro dal</div>
               <div class="info-value">{{ getJoinedDate() }}</div>
             </div>
           </div>
@@ -42,39 +42,51 @@
       <mat-card-actions>
         <button mat-raised-button color="warn" (click)="onLogout()">
           <mat-icon>logout</mat-icon>
-          Logout
+          Esci
         </button>
       </mat-card-actions>
     </mat-card>
 
     <mat-card class="features-card">
       <mat-card-header>
-        <mat-card-title>Dashboard Features</mat-card-title>
+        <mat-card-title>Funzionalità della Home</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="features-grid">
-          <div class="feature-item">
-            <mat-icon color="primary">shield</mat-icon>
-            <h3>Secure Authentication</h3>
-            <p>Protected with JWT tokens and refresh token mechanism</p>
+          <div class="feature-item clickable" routerLink="/buste-contanti">
+            <mat-icon color="primary">inventory_2</mat-icon>
+            <h3>Buste Contanti</h3>
+            <p>Gestione delle buste contanti in cassaforte</p>
           </div>
 
-          <div class="feature-item">
-            <mat-icon color="primary">lock</mat-icon>
-            <h3>Password Encryption</h3>
-            <p>Your password is securely hashed using BCrypt</p>
+          <div class="feature-item clickable" routerLink="/cassa-intelligente">
+            <mat-icon color="primary">point_of_sale</mat-icon>
+            <h3>Cassa Intelligente</h3>
+            <p>Monitoraggio versamenti giornalieri</p>
           </div>
 
-          <div class="feature-item">
-            <mat-icon color="primary">verified_user</mat-icon>
-            <h3>Protected Routes</h3>
-            <p>Access control with authentication guards</p>
+          <div class="feature-item clickable" routerLink="/fondo-spese">
+            <mat-icon color="primary">account_balance_wallet</mat-icon>
+            <h3>Fondo Spese</h3>
+            <p>Gestione fondo spese e pagamenti</p>
           </div>
 
-          <div class="feature-item">
-            <mat-icon color="primary">autorenew</mat-icon>
-            <h3>Auto Token Refresh</h3>
-            <p>Seamless token renewal in the background</p>
+          <div class="feature-item clickable" routerLink="/fondo-cassa">
+            <mat-icon color="primary">savings</mat-icon>
+            <h3>Fondo Cassa</h3>
+            <p>Gestione fondi cassa multipli</p>
+          </div>
+
+          <div class="feature-item clickable" routerLink="/sovv-monetaria">
+            <mat-icon color="primary">payments</mat-icon>
+            <h3>Sovv. Monetaria</h3>
+            <p>Sovvenzione monetaria e rimanenze</p>
+          </div>
+
+          <div class="feature-item clickable" routerLink="/user-management" *ngIf="authService.currentUser()?.role === 2">
+            <mat-icon color="primary">people</mat-icon>
+            <h3>Gestione Utenti</h3>
+            <p>Gestisci utenti e permessi (Solo Admin)</p>
           </div>
         </div>
       </mat-card-content>

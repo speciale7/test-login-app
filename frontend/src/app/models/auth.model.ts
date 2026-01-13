@@ -1,7 +1,14 @@
+export enum UserRole {
+  Reader = 0,
+  Writer = 1,
+  Admin = 2
+}
+
 export interface User {
   id: number;
   username: string;
   email: string;
+  role: UserRole;
   createdAt: string;
 }
 

@@ -1,0 +1,82 @@
+<div class="page-container">
+  <div class="summary-grid">
+    <mat-card class="summary-card fondo-card" *ngFor="let fondo of fondiCassa">
+      <mat-card-content>
+        <div class="summary-title">Fondo cassa {{ fondo.code }}</div>
+        <div class="summary-value">{{ fondo.amount | currency:'EUR':'symbol':'1.0-0' }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="summary-card last-update">
+    <mat-card-content>
+      <div class="summary-title">Ultima conta</div>
+      <div class="summary-value">{{ lastUpdate ? 'oggi ' + (lastUpdate | date:'HH:mm') : '-' }}</div>
+      <div class="summary-subtitle">{{ lastUpdate ? (lastUpdate | date:'dd/MM/yyyy') : '' }}</div>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <p>Caricamento...</p>
+  </div>
+
+  <div *ngIf="!isLoading && fondiCassa.length === 0" class="no-data-container">
+    <mat-card>
+      <mat-card-content>
+        <p>Nessun dato disponibile</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <mat-card class="table-card">
+    <mat-card-header>
+      <mat-card-title>Fondo Cassa - Storico</mat-card-title>
+      <div style="flex: 1 1 auto;"></div>
+      <button mat-raised-button color="primary" (click)="openNewDialog()" [disabled]="!authService.canWrite()">
+        <mat-icon>add</mat-icon>
+        Nuovo
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" class="data-table">
+          <ng-container matColumnDef="countingDate">
+            <th mat-header-cell *matHeaderCellDef>Data</th>
+            <td mat-cell *matCellDef="let element">{{ element.countingDate | date:'dd/MM/yyyy' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="cashCode">
+            <th mat-header-cell *matHeaderCellDef>Cassa</th>
+            <td mat-cell *matCellDef="let element">{{ element.cashCode || '-' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="countingAmount">
+            <th mat-header-cell *matHeaderCellDef>Importo</th>
+            <td mat-cell *matCellDef="let element">{{ element.countingAmount | currency:'EUR':'symbol':'1.0-0' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="countingCoins">
+            <th mat-header-cell *matHeaderCellDef>Monete</th>
+            <td mat-cell *matCellDef="let element">{{ element.countingCoins | currency:'EUR':'symbol':'1.0-0' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Azioni</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button (click)="openEditDialog(element)"
+                      [attr.aria-label]="authService.canWrite() ? 'Visualizza/Modifica' : 'Visualizza'">
+                <mat-icon>search</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="deleteItem(element.id)" [disabled]="!authService.canWrite()">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

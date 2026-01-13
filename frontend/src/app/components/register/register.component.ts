@@ -130,12 +130,12 @@ export class RegisterComponent {
 
     this.authService.register({ username, email, password }).subscribe({
       next: () => {
-        this.snackBar.open('Registration successful! Welcome!', 'Close', { duration: 3000 });
+        this.snackBar.open('Registrazione completata! Benvenuto!', 'Chiudi', { duration: 3000 });
         this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         this.errorMessage = error.message;
-        this.snackBar.open(error.message, 'Close', { duration: 5000 });
+        this.snackBar.open(error.message, 'Chiudi', { duration: 5000 });
         this.loading = false;
       },
       complete: () => {
@@ -146,33 +146,42 @@ export class RegisterComponent {
 
   getUsernameError(): string {
     const control = this.registerForm.get('username');
-    if (control?.hasError('required')) return 'Username is required';
-    if (control?.hasError('minlength')) return 'Username must be at least 3 characters';
-    if (control?.hasError('maxlength')) return 'Username must not exceed 50 characters';
+    if (control?.hasError('required')) return 'Username è richiesto';
+    if (control?.hasError('minlength')) return 'L\'username deve essere di almeno 3 caratteri';
+    if (control?.hasError('maxlength')) return 'L\'username non deve superare i 50 caratteri';
     return '';
   }
 
   getEmailError(): string {
     const control = this.registerForm.get('email');
-    if (control?.hasError('required')) return 'Email is required';
-    if (control?.hasError('email')) return 'Please enter a valid email';
+    if (control?.hasError('required')) return 'Email è richiesta';
+    if (control?.hasError('email')) return 'Inserisci un\'email valida';
     return '';
   }
 
   getPasswordError(): string {
     const control = this.registerForm.get('password');
-    if (control?.hasError('required')) return 'Password is required';
-    if (control?.hasError('minlength')) return 'Password must be at least 6 characters';
+    if (control?.hasError('required')) return 'Password è richiesta';
+    if (control?.hasError('minlength')) return 'La password deve essere di almeno 6 caratteri';
     if (control?.hasError('passwordStrength')) {
-      return 'Password must contain uppercase, lowercase, number, and special character';
+      return 'La password deve contenere maiuscole, minuscole, numeri e caratteri speciali';
     }
     return '';
   }
 
   getConfirmPasswordError(): string {
     const control = this.registerForm.get('confirmPassword');
-    if (control?.hasError('required')) return 'Please confirm your password';
-    if (this.registerForm.hasError('passwordMismatch')) return 'Passwords do not match';
+    if (control?.hasError('required')) return 'Conferma la tua password';
+    if (this.registerForm.hasError('passwordMismatch')) return 'Le password non corrispondono';
     return '';
+  }
+
+  getPasswordStrengthLabel(): string {
+    switch (this.passwordStrength) {
+      case 'weak': return 'Debole';
+      case 'medium': return 'Media';
+      case 'strong': return 'Forte';
+      default: return '';
+    }
   }
 }

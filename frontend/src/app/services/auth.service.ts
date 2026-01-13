@@ -162,6 +162,30 @@ export class AuthService {
   }
 
   /**
+   * Check if current user can write (Writer or Admin)
+   */
+  canWrite(): boolean {
+    const user = this.currentUser();
+    return user !== null && (user.role === 1 || user.role === 2); // Writer or Admin
+  }
+
+  /**
+   * Check if current user is admin
+   */
+  isAdmin(): boolean {
+    const user = this.currentUser();
+    return user !== null && user.role === 2; // Admin
+  }
+
+  /**
+   * Check if current user is reader only
+   */
+  isReader(): boolean {
+    const user = this.currentUser();
+    return user !== null && user.role === 0; // Reader
+  }
+
+  /**
    * Handle HTTP errors
    */
   private handleError(error: HttpErrorResponse): Observable<never> {
