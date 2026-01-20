@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: login-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/loginapp.db
+      # SECURITY: Change these values in production or use Docker secrets
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY:-YourSuperSecretKeyForJWTTokenGenerationAndValidation2024!}
+      - JwtSettings__Issuer=LoginApi
+      - JwtSettings__Audience=LoginApiClients
+      - JwtSettings__AccessTokenExpirationMinutes=15
+      - JwtSettings__RefreshTokenExpirationDays=7
+      - Cors__AllowedOrigins__0=http://localhost
+      - Cors__AllowedOrigins__1=http://localhost:80
+    volumes:
+      - backend-data:/app/data
+    networks:
+      - login-network
+    restart: unless-stopped
+
+  # Frontend Angular App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: login-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - login-network
+    restart: unless-stopped
+
+volumes:
+  backend-data:
+    driver: local
+
+networks:
+  login-network:
+    driver: bridge

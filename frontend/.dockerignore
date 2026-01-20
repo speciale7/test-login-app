@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.angular/
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+.env
+.env.local
+Dockerfile
+.dockerignore
+README.md
