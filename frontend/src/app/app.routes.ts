@@ -10,17 +10,20 @@ export const routes: Routes = [
   { 
     path: 'login', 
     component: LoginComponent,
-    canActivate: [guestGuard]
+    canActivate: [guestGuard],
+    data: { animation: 'LoginPage' }
   },
   { 
     path: 'register', 
     component: RegisterComponent,
-    canActivate: [guestGuard]
+    canActivate: [guestGuard],
+    data: { animation: 'RegisterPage' }
   },
   { 
     path: 'dashboard', 
     component: DashboardComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: { animation: 'DashboardPage' }
   },
   { path: '**', redirectTo: '/dashboard' }
 ];

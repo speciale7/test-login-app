@@ -29,3 +29,83 @@ body {
   text-align: center;
 }
 
+/* Global animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Error message animation */
+.error-message {
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Material design button overrides for green theme */
+.mat-mdc-raised-button.mat-primary {
+  background-color: #4CAF50 !important;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+  background-color: #66BB6A !important;
+}
+
+.mat-mdc-raised-button.mat-accent {
+  background-color: #4CAF50 !important;
+}
+
+.mat-mdc-raised-button.mat-accent:hover {
+  background-color: #66BB6A !important;
+}
+
+/* Material toolbar green theme */
+.mat-toolbar.mat-primary {
+  background-color: #4CAF50 !important;
+}
+
+/* Material icon green color for primary */
+.mat-icon.mat-primary {
+  color: #4CAF50 !important;
+}
+
+/* Form field focus color */
+.mat-mdc-form-field.mat-focused .mat-mdc-form-field-focus-overlay {
+  background-color: rgba(76, 175, 80, 0.12) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-text-field--outlined .mdc-notched-outline__leading,
+.mat-mdc-form-field.mat-focused .mdc-text-field--outlined .mdc-notched-outline__notch,
+.mat-mdc-form-field.mat-focused .mdc-text-field--outlined .mdc-notched-outline__trailing {
+  border-color: #4CAF50 !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+  color: #4CAF50 !important;
+}
+
+/* Checkbox green theme */
+.mat-mdc-checkbox.mat-accent .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+  background-color: #4CAF50 !important;
+  border-color: #4CAF50 !important;
+}
+
