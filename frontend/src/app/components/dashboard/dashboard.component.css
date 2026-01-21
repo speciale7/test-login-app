@@ -1,8 +1,7 @@
 .dashboard-container {
   min-height: calc(100vh - 64px);
   padding: 20px;
-  background: linear-gradient(135deg, var(--green-gradient-start) 0%, var(--green-gradient-end) 100%);
-  animation: fadeIn 0.5s ease-out;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .dashboard-content {
@@ -20,28 +19,16 @@ h1 {
 .user-card {
   margin-bottom: 24px;
   padding: 20px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.user-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.2);
 }
 
 .user-avatar {
-  background-color: var(--green-primary);
+  background-color: #667eea;
   width: 60px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.user-avatar:hover {
-  background-color: var(--green-dark);
-  transform: scale(1.05);
 }
 
 .user-avatar mat-icon {
@@ -67,13 +54,8 @@ h1 {
 }
 
 .info-item mat-icon {
-  color: var(--green-primary);
+  color: #667eea;
   margin-right: 16px;
-  transition: color 0.3s ease;
-}
-
-.info-item:hover mat-icon {
-  color: var(--green-dark);
 }
 
 .info-content {
@@ -106,12 +88,6 @@ mat-card-actions button {
 
 .features-card {
   padding: 20px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.features-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.2);
 }
 
 .features-grid {
@@ -130,13 +106,13 @@ mat-card-actions button {
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, rgba(129, 199, 132, 0.1) 0%, rgba(76, 175, 80, 0.1) 100%);
+  background-color: #f9f9f9;
 }
 
 .feature-item.clickable:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.3);
-  background: linear-gradient(135deg, rgba(129, 199, 132, 0.2) 0%, rgba(76, 175, 80, 0.2) 100%);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
 }
 
 .feature-item mat-icon {
