@@ -1,7 +1,17 @@
 .dashboard-container {
   min-height: calc(100vh - 64px);
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .dashboard-content {
@@ -14,21 +24,57 @@ h1 {
   text-align: center;
   margin-bottom: 30px;
   font-size: 2.5rem;
+  animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .user-card {
   margin-bottom: 24px;
   padding: 20px;
+  animation: scaleIn 0.5s ease-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(46, 125, 50, 0.2);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .user-avatar {
-  background-color: #667eea;
+  background-color: #4CAF50;
   width: 60px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: rotate(360deg) scale(1.1);
+  background-color: #66BB6A;
 }
 
 .user-avatar mat-icon {
@@ -54,8 +100,13 @@ h1 {
 }
 
 .info-item mat-icon {
-  color: #667eea;
+  color: #4CAF50;
   margin-right: 16px;
+  transition: transform 0.3s ease;
+}
+
+.info-item:hover mat-icon {
+  transform: scale(1.2);
 }
 
 .info-content {
@@ -88,6 +139,13 @@ mat-card-actions button {
 
 .features-card {
   padding: 20px;
+  animation: scaleIn 0.6s ease-out 0.2s both;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.features-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(46, 125, 50, 0.2);
 }
 
 .features-grid {
@@ -100,6 +158,20 @@ mat-card-actions button {
 .feature-item {
   text-align: center;
   padding: 20px;
+  transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-8px);
+}
+
+.feature-item:hover mat-icon {
+  animation: bounce 0.5s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .feature-item mat-icon {

@@ -23,7 +23,8 @@ A complete, production-ready full-stack login application with .NET 8 backend an
 
 ### UI/UX
 - ✅ Responsive design (mobile-friendly)
-- ✅ Modern Material Design UI
+- ✅ Modern Material Design UI with green color scheme
+- ✅ Smooth animations and transitions
 - ✅ Password strength indicator
 - ✅ Form validation with helpful error messages
 - ✅ Loading indicators

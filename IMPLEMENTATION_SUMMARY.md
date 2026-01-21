@@ -81,22 +81,26 @@ frontend/src/app/
    - Remember me option
    - Error handling
    - Loading states
+   - Green color scheme with smooth animations
 
 2. **Register Component**
    - Username, email, password fields
    - Password confirmation
-   - Real-time password strength indicator
+   - Real-time password strength indicator with green theme
    - Client-side validation
+   - Smooth card and form animations
 
 3. **Dashboard Component**
    - User profile display
-   - Feature cards
+   - Feature cards with hover animations
    - Protected by AuthGuard
+   - Green gradient background with animated elements
 
 4. **Navigation Component**
    - Conditional rendering based on auth state
    - User menu with logout
    - Responsive design
+   - Smooth slide-down animation on load
 
 ### Route Guards
 
