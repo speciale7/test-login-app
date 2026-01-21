@@ -4,13 +4,21 @@
   align-items: center;
   min-height: calc(100vh - 64px);
   padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--green-gradient-start) 0%, var(--green-gradient-end) 100%);
+  animation: fadeIn 0.5s ease-out;
 }
 
 .register-card {
   width: 100%;
   max-width: 450px;
   padding: 20px;
+  animation: fadeIn 0.6s ease-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.2);
 }
 
 .full-width {
@@ -30,13 +38,15 @@
 }
 
 .login-link a {
-  color: #667eea;
+  color: var(--green-primary);
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .login-link a:hover {
   text-decoration: underline;
+  color: var(--green-dark);
 }
 
 .error-message {

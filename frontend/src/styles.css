@@ -20,6 +20,44 @@ body {
   padding: 0;
 }
 
+/* Green color variables */
+:root {
+  --green-primary: #4caf50;
+  --green-light: #81c784;
+  --green-dark: #388e3c;
+  --green-gradient-start: #66bb6a;
+  --green-gradient-end: #2e7d32;
+}
+
+/* Global animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Apply fade-in animation to all mat-cards */
+mat-card {
+  animation: fadeIn 0.4s ease-out;
+  transition: all 0.3s ease;
+}
+
 /* Utility classes */
 .full-width {
   width: 100%;
