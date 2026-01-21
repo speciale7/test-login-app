@@ -44,6 +44,12 @@ h1 {
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.2);
 }
 
 .users-table {
@@ -65,7 +71,8 @@ h1 {
 }
 
 .users-table tr:hover {
-  background-color: #f9f9f9;
+  background-color: rgba(129, 199, 132, 0.1);
+  transition: background-color 0.3s ease;
 }
 
 .no-data {
@@ -81,6 +88,12 @@ button mat-icon {
 
 .info-card {
   margin-top: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(76, 175, 80, 0.2);
 }
 
 .role-info {
