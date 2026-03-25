@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace LoginApi.DTOs
 {
     // Cassa Intelligente DTOs
@@ -20,24 +22,49 @@ namespace LoginApi.DTOs
 
     public class CreateCassaInteligenteDto
     {
+        [Required(ErrorMessage = "IdStore is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "IdStore must be a positive integer")]
         public int IdStore { get; set; }
+
+        [StringLength(100)]
         public string? StoreAlias { get; set; }
+
         public DateTime? CountingDate { get; set; }
+
+        [StringLength(100)]
         public string? SecurityEnvelopeCode { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [Range(typeof(decimal), "-9999999.99", "9999999.99", ErrorMessage = "CountingDifference must be between -9,999,999.99 and 9,999,999.99")]
         public decimal? CountingDifference { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
+
         public DateTime? WithdrawalDate { get; set; }
     }
 
     public class UpdateCassaInteligenteDto
     {
+        [StringLength(100)]
         public string? StoreAlias { get; set; }
+
         public DateTime? CountingDate { get; set; }
+
+        [StringLength(100)]
         public string? SecurityEnvelopeCode { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [Range(typeof(decimal), "-9999999.99", "9999999.99", ErrorMessage = "CountingDifference must be between -9,999,999.99 and 9,999,999.99")]
         public decimal? CountingDifference { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
+
         public DateTime? WithdrawalDate { get; set; }
     }
 
@@ -59,24 +86,49 @@ namespace LoginApi.DTOs
 
     public class CreateFondoSpeseDto
     {
+        [Required(ErrorMessage = "IdStore is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "IdStore must be a positive integer")]
         public int IdStore { get; set; }
+
         public DateTime? CountingDate { get; set; }
+
+        [StringLength(100)]
         public string? ExpenseType { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
+
         public DateTime? InvoiceDate { get; set; }
+
+        [StringLength(100)]
         public string? InvoiceNumber { get; set; }
+
+        [StringLength(500)]
         public string? ReasonExpenses { get; set; }
     }
 
     public class UpdateFondoSpeseDto
     {
         public DateTime? CountingDate { get; set; }
+
+        [StringLength(100)]
         public string? ExpenseType { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
+
         public DateTime? InvoiceDate { get; set; }
+
+        [StringLength(100)]
         public string? InvoiceNumber { get; set; }
+
+        [StringLength(500)]
         public string? ReasonExpenses { get; set; }
     }
 
@@ -95,18 +147,33 @@ namespace LoginApi.DTOs
 
     public class CreateFondoCassaDto
     {
+        [Required(ErrorMessage = "IdStore is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "IdStore must be a positive integer")]
         public int IdStore { get; set; }
+
+        [StringLength(50)]
         public string? CashCode { get; set; }
+
         public DateTime? CountingDate { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
     }
 
     public class UpdateFondoCassaDto
     {
+        [StringLength(50)]
         public string? CashCode { get; set; }
+
         public DateTime? CountingDate { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
     }
 
@@ -125,18 +192,33 @@ namespace LoginApi.DTOs
 
     public class CreateSovvMonetariaDto
     {
+        [Required(ErrorMessage = "IdStore is required")]
+        [Range(1, int.MaxValue, ErrorMessage = "IdStore must be a positive integer")]
         public int IdStore { get; set; }
+
         public DateTime? CountingDate { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [StringLength(500)]
         public string? CountingNote { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
     }
 
     public class UpdateSovvMonetariaDto
     {
         public DateTime? CountingDate { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingAmount must be between 0 and 9,999,999.99")]
         public decimal? CountingAmount { get; set; }
+
+        [StringLength(500)]
         public string? CountingNote { get; set; }
+
+        [Range(typeof(decimal), "0", "9999999.99", ErrorMessage = "CountingCoins must be between 0 and 9,999,999.99")]
         public decimal? CountingCoins { get; set; }
     }
 }
